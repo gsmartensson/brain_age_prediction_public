@@ -20,7 +20,7 @@ import pandas as pd
 import torch
 import argparse
 import os 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 import torch.nn.parallel
@@ -44,7 +44,7 @@ parser.add_argument('--input-file', default='/home/gustav/Desktop/misc/brain_age
 parser.add_argument('--output-dir', default='/home/gustav/Desktop/misc/brain_age/output_dir', help='Path to directory where all output files. Directory will be created if it doesn\'t exist')
 parser.add_argument('--uid', default='', type=str,help='Chosen unique id for output files that will located at output-dir/{uid_mni_dof_6.nii,uid.csv,uid_coronal.jpg}')
 parser.add_argument('--no-new-registration', dest='registration', action='store_false',help='If a previous AC/PC-alignment exists (file output_folder/uid_mni_dof_6.nii) then setting this flag will use previous registration. If there is no previious transform, the transform will be performed anyway.')
-parser.set_defaults(registration=False) #TODO: change to True
+parser.set_defaults(registration=True) #TODO: change to True
 args = parser.parse_args()
 
 print('---- Started age prediction ----')
