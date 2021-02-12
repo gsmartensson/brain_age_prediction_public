@@ -44,7 +44,7 @@ parser.add_argument('--input-file', default='/home/gustav/Desktop/misc/brain_age
 parser.add_argument('--output-dir', default='/home/gustav/Desktop/misc/brain_age/output_dir', help='Path to directory where all output files. Directory will be created if it doesn\'t exist')
 parser.add_argument('--uid', default='', type=str,help='Chosen unique id for output files that will located at output-dir/{uid_mni_dof_6.nii,uid.csv,uid_coronal.jpg}')
 parser.add_argument('--no-new-registration', dest='registration', action='store_false',help='If a previous AC/PC-alignment exists (file output_folder/uid_mni_dof_6.nii) then setting this flag will use previous registration. If there is no previious transform, the transform will be performed anyway.')
-parser.set_defaults(registration=True) #TODO: change to True
+parser.set_defaults(registration=True)
 args = parser.parse_args()
 
 print('---- Started age prediction ----')
@@ -96,48 +96,26 @@ for i,m in enumerate(model_paths):
     models[i] = ResNet3D(np.array(params['img_dim'])//2,width_f=3)
 
 #%% Load weights and run prediction
-if True:
-    predicted_ages = np.zeros(len(models))
-    for i,key in enumerate(models.keys()):
-        # loading weights
-        model_checkpoint = torch.load(model_paths[i],map_location='cpu')
-        new_model_checkpoint = OrderedDict()
-        for k, v in model_checkpoint.items():
-            name = k[7:] # remove module. from items in model_checkpoint
-            new_model_checkpoint[name] = v
-        models[key].load_state_dict(new_model_checkpoint)
-        models[key] = models[key].to('cpu')
-        # evaluating model
-        with torch.no_grad():
-            models[key].eval()
-            tmp,_ = models[key](img)
-            predicted_ages[i] = tmp.detach().numpy()
-            
-    print('---- Ages predicted from each individual model ---')
-    print(predicted_ages)
-    print('--'*20)
-else:
-    device =torch.device('cuda')
-    predicted_ages = np.zeros(len(models))
-    
-    for i,key in enumerate(models.keys()):
 
-        models[key] = models[key].to(device)
-        models[key]= torch.nn.DataParallel(models[key], device_ids=range(torch.cuda.device_count()))
-    
-        model_checkpoint = torch.load(model_paths[i],map_location='cpu')
-        # Remove 
-
-        models[key].load_state_dict(model_checkpoint)
-        models[key] = models[key].to(device)
-        with torch.no_grad():
-            models[key].eval()
-            tmp,_ = models[key](img.to(device))
-            predicted_ages[i] = tmp.detach().to('cpu').numpy()
-            
-    print('---- Ages predicted from each individual model ---')
-    print(predicted_ages)
-    print('--'*20)
+predicted_ages = np.zeros(len(models))
+for i,key in enumerate(models.keys()):
+    # loading weights
+    model_checkpoint = torch.load(model_paths[i],map_location='cpu')
+    new_model_checkpoint = OrderedDict()
+    for k, v in model_checkpoint.items():
+        name = k[7:] # remove module. from items in model_checkpoint
+        new_model_checkpoint[name] = v
+    models[key].load_state_dict(new_model_checkpoint)
+    models[key] = models[key].to('cpu')
+    # evaluating model
+    with torch.no_grad():
+        models[key].eval()
+        tmp,_ = models[key](img)
+        predicted_ages[i] = tmp.detach().numpy()
+        
+print('---- Ages predicted from each individual model ---')
+print(predicted_ages)
+print('--'*20)
 #%% Save
 rating_dict['predicted_age_mean'] = predicted_ages.mean()
 rating_dict['predicted_age_std'] = predicted_ages.std()
