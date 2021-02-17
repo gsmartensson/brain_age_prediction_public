@@ -33,7 +33,7 @@ parser.add_argument('-bs', '--batch-size', default=20, type=int,metavar='N', hel
 parser.add_argument('-epochs', default=20, type=int,metavar='N', help='mini-batch size (default: 20)')
 parser.add_argument('--comment', default='test_public_script', help='Add comment to training session for outputdir')
 parser.add_argument('--print-frequency', default=10, type=int, metavar='N',help='num batches to process before printing prediction error')
-parser.set_defaults(evaluate_test_set=True)
+parser.set_defaults(evaluate_test_set=False)
 args = parser.parse_args()
 
 
