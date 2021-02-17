@@ -108,8 +108,20 @@ awk '(NR == 1) || (FNR > 1)' /path/to/output/folder/*.csv > merged_file.csv
 
 ```
 ## Train model
-If you want to train your own model you need to have a GPU and a GPU version of pytorch installed
+If you want to train your own model you need to have a GPU and a GPU version of pytorch installed.
 
+- Prepare a csv file `your_csv_file.csv` that includes full paths to the images (`path`), the chronological age at the time of the scan (`age_at_scan`), a unique ID of each image (`uid`) and if the image belongs to train, dev or test set (`partition`). See `sample_file_for_preprocessing_script.csv` for an example. Please note that these four columns are needed for the training script to work.
+- Run the script `brain_age_trainer_preprocessing.py` with the following flags (may take several hours depending on sample size):
+``` 
+python brain_age_trainer_preprocessing.py --input-csv your_csv_file.csv --output-csv your_new_csv_file.csv --output-dir /path/to/folder/to/plave/registered/images
+```
+- The output file `your_new_csv_file.csv` contains the same info as `your_csv_file.csv` but with an added column `path_registered` containing paths to the FSL-registered files in the chosen `output-dir`. 
+- To start training the model, run the following:
+``` 
+python brain_age_trainer.py --input-csv your_new_csv_file.csv --output-dir /path/to/output/folder
+```
+- The path specified in `output-dir` is where a timestamped folder will be created containing the trained weights of the model(s), predictions on the training and development sets (add flag `--evaluate-test-set` if you want to evaluate your test set in the end of the script), and tensorboard files monitoring the training process. (See https://pytorch.org/docs/stable/tensorboard.html for help on tensorboard.)
+- To use your models, you can follow the steps in [Usage](#usage) providing the path to your output folder as `--model-dir` instead of the path to the downloaded weights.
 
 ## Troubleshooting
 

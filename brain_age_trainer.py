@@ -25,7 +25,7 @@ def count_parameters(model):
 
 parser = argparse.ArgumentParser(description='Training of model for brain age predictions from T1-weighted nifti images')
 
-parser.add_argument('--csv-file', default='../brain_age/data/sample_long.csv', help='Path to csv file with paths to img files and labels (chronological age)')
+parser.add_argument('--input-csv', default='../brain_age/data/sample_long.csv', help='Path to csv file with paths to img files and labels (chronological age)')
 parser.add_argument('--output-dir', default='/media/datadisk/gustav/results/brain_age', help='Path to directory where output folder is created.')
 parser.add_argument('--evaluate-test-set', dest='evaluate_test_set', action='store_false',help='If you have images labeled "test" in you csv file and want evaluate it after training')
 parser.add_argument('--lr', '--learning-rate', default=0.005, type=float,metavar='LR', help='initial learning rate') 
@@ -33,7 +33,7 @@ parser.add_argument('-bs', '--batch-size', default=20, type=int,metavar='N', hel
 parser.add_argument('-epochs', default=20, type=int,metavar='N', help='mini-batch size (default: 20)')
 parser.add_argument('--comment', default='test_public_script', help='Add comment to training session for outputdir')
 parser.add_argument('--print-frequency', default=10, type=int, metavar='N',help='num batches to process before printing prediction error')
-parser.set_defaults(registration=True)
+parser.set_defaults(evaluate_test_set=True)
 args = parser.parse_args()
 
 
@@ -51,9 +51,9 @@ np.random.seed(0)
 torch.random.manual_seed(0)
 
 #%% Create datasets and data loaders
-print('Creating dataset from %s' % args.csv_file)
+print('Creating dataset from %s' % args.input_csv)
 print('Images in column path_registered are assumed to have been registered ')
-df = pd.read_csv(args.csv_file,usecols=['uid','path_registered','age_at_scan','partition'])
+df = pd.read_csv(args.input_csv,usecols=['uid','path_registered','age_at_scan','partition'])
 
 # transforms
 transforms_train = load_transforms(cfg,random_chance=.7)

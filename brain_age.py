@@ -20,18 +20,11 @@ import pandas as pd
 import torch
 import argparse
 import os 
-# import matplotlib.pyplot as plt
 import numpy as np
 
-import torch.nn.parallel
-import torch.optim
-import torch.utils.data
 from collections import OrderedDict
 import glob
 import datetime
-import collections
-
-global args
 
 from utils.misc import native_to_tal_fsl
 from model.model import ResNet3D
@@ -80,7 +73,7 @@ native_to_tal_fsl(args.input_file, force_new_transform=args.registration,dof=dof
 tal_path = os.path.join(args.output_dir,args.uid + '_mni_dof_'+str(dof) +'.nii')
 
 # Log parameters in output csv file
-rating_dict = collections.OrderedDict()
+rating_dict = OrderedDict()
 rating_dict['uid'] = [args.uid]
 rating_dict['model-dir'] = [args.model_dir]
 #%% Load transforms and parameters needed for this

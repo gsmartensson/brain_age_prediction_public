@@ -1,7 +1,7 @@
 import numpy as np
 import torch.nn as nn
 import torch
-from model.modules import ResidualAttentionNet,conv_block,ResidualAttentionNet3D,ResidualNet3D
+from model.modules import ResidualNet3D
 
 class ResNet3D(nn.Module):
     '''
