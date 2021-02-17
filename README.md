@@ -78,8 +78,6 @@ tar -xvf 0.1.tar.gz
 ```
 or, if you don't want to use the terminal, copy the link into your browser. This will prompt a download, which you direct to you directory of choice. Left-click on the .tar.gz and extract content.
 
-To download the model weights used in the [original paper](https://www.sciencedirect.com/science/article/pii/S2213158219302220) (v0.7, trained on a smaller data set), use the link "wget "https://github.com/gsmartensson/brain_age_prediction_public/releases/download/v0.7/0.7.tar.gz"" instead.
-
 
 ## Usage
 ### Single case
@@ -88,11 +86,11 @@ To process an image through the model you can use the following command (inside 
 python brain_age.py --input-file /path/to/image_folder/input_filename.nii.gz --model-dir /path/to/model_weights_folder --uid new_output_filename_prefix --output-dir /path/to/output_folder
 ```
 
-This command would input the image `input_filename.nii.gz`, load the pretrained weights located in `/path/to/model_weights_folder/{mta,gca-f,pa}/model_*.pth.tar` and produce the files:
+This command would input the image `input_filename.nii.gz`, load the pretrained weights located in `/path/to/model_weights_folder/*.pth` and produce the files:
 
 - `new_output_filename_prefix.csv`: csv file with the predicted brain age. 
-- `new_output_filename_prefix_mni_dof_6.nii`: AC-PC aligned .nii of `input_filename.nii.gz`.
-- `new_output_filename_prefix_mni_dof_6.mat`: Computed transformation matrix for the AC-PC alignment from FSL. Since the FLS registration is the most time consuming step of `brain_age.py`, saving the intermediate processing step can save time if you want to re-run `brain_age.py` with e.g. new trained weights in future.
+- `new_output_filename_prefix_mni_dof_6.nii`: MNI registered .nii of `input_filename.nii.gz`.
+- `new_output_filename_prefix_mni_dof_6.mat`: Computed transformation matrix for the registration of FSL. Since the FLS registration is the most time consuming step of `brain_age.py`, saving the intermediate processing step can save time if you want to re-run `brain_age.py` with e.g. new trained weights in future.
 
 If `--uid` is not provided, the output file prefix will instead be the basename of the input-file.
 
