@@ -8,11 +8,12 @@ Created on Tue Sep 22 13:59:09 2020
 import transforms.transforms as tfs
 def load_transforms(args,random_chance=1):
 
-    # s determins offset factor. If random_chance==0 (i.e. under testing), then we want no random offset.
+    # s determins random offset factor. If random_chance==0 (e.g. during testing), then we want no random offset.
     if random_chance==0:
         s=0
     else:
         s=1
+    
     transforms=tfs.ComposeMRI([
             tfs.LoadNifti(),
             tfs.RandomScaling(scale_range=[.95,1.05]),#.95,1.05
@@ -22,9 +23,9 @@ def load_transforms(args,random_chance=1):
             tfs.ReturnImageData(),
             tfs.Crop(dims=args['img_dim'],offset=[0,-0,0],rand_offset = 5*s),
             tfs.ReduceSlices(2,2),
-            tfs.PerImageNormalization(),
+            tfs.PrcCap(),
+            tfs.UnitInterval(),
             tfs.ToTensor(),
-
             ])
 
     return transforms

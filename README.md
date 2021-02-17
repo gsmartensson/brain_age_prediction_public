@@ -18,6 +18,7 @@ The network architecture is a 3D version of ResNet [He et al. (2017)](https://ar
 * [Usage](#usage)
    * [Single case](#single-case)
    * [Multiple files](#multiple-files)
+* [Train model](#train-model)
 * [Troubleshooting](#troubleshooting)
 * [Citation](#citation)
 * [License](#license)
@@ -64,12 +65,10 @@ We suggest that you install all python libraries in a conda environment, see ins
 ``` 
 pip install -r requirements.txt
 ```
-- Install the latest PyTorch version (currently 1.3) by following the instructions [here](https://pytorch.org/). PyTorch is a deep learning platform with a Python front-end.
+- Install the latest PyTorch version (at time of writing: 1.7.1) by following the instructions [here](https://pytorch.org/). If you want to train your own model you need to download the CUDA version of PyTorch (and have a GPU + CUDA installed).
 
 ### Download model weights
-In order to use the model you also need to download the pretrained model weights to your computer. 
-
-In the terminal:
+You can either [train your own model](#train-model) or download our pretrained model weights that we used in our papers. To In the terminal:
 
 ```
 cd /path/to/model-dir
@@ -79,6 +78,7 @@ tar -xvf 0.8.tar.gz
 or, if you don't want to use the terminal, copy the link into your browser. This will prompt a download, which you direct to you directory of choice. Left-click on the .tar.gz and extract content.
 
 To download the model weights used in the [original paper](https://www.sciencedirect.com/science/article/pii/S2213158219302220) (v0.7, trained on a smaller data set), use the link "wget "https://github.com/gsmartensson/brain_age_prediction_public/releases/download/v0.7/0.7.tar.gz"" instead.
+
 
 ## Usage
 ### Single case
@@ -107,6 +107,9 @@ This will process all .nii or .nii.gz images in the folder /path/to/images/img1.
 awk '(NR == 1) || (FNR > 1)' /path/to/output/folder/*.csv > merged_file.csv
 
 ```
+## Train model
+If you want to train your own model you need to have a GPU and a GPU version of pytorch installed
+
 
 ## Troubleshooting
 

@@ -5,34 +5,56 @@ Created on Fri Feb  5 14:33:01 2021
 
 @author: gustav
 """
-# import pickle
 import numpy as np 
-
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import model
-# import time
-# import torch
-# import misc
-# from torch.utils.tensorboard import SummaryWriter
-
-# import numpy as np
+import pandas as pd
 import os
-# import matplotlib.pyplot as plt
-# from torch.utils.data import Dataset
-# import nibabel
-# import torch
-
 import nipype.interfaces.fsl as fsl
 from shutil import copyfile
-# import glob
-# import copy
-# import random
-# from multiprocessing import Pool
-# import time
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+#%%
+class StoreOutput(object):
+    """accumulate outputs and labels and compute performance metrics"""
+    def __init__(self):
+        self.reset()
+        
+    def reset(self):
+        self.pred = []
+        self.label = []
+        self.uid= [] 
+        self.df= [] 
+    
+    def get_df(self):
+        # return dataframe with predictions
+        self.df = pd.DataFrame({'age_at_scan':self.label,'predicted_age':self.pred,'uid':self.uid})
+        return self.df
+    
+    def update(self, new_pred, new_labels, new_uids=None):
+        # update object with new labels and predictions
+        new_pred=new_pred.detach().to('cpu').numpy()
+        new_labels=new_labels.detach().to('cpu').numpy()
+        
+        self.pred = np.concatenate((self.pred,new_pred))
+        self.label = np.concatenate((self.label,new_labels))
+        if new_uids is not None:
+            self.uid= np.concatenate((self.uid,new_uids))
+
+    def mse(self,j=None):
+        # get mean squared error of predictions
+        cm=mean_squared_error(self.pred, self.label)
+        return cm
+    
+    def mae(self):
+        # get mean absolute error of predictions
+        cm=mean_absolute_error(self.pred, self.label)
+        return cm
+    def save_df(self,fname='output.csv'):
+        # get mean absolute error of predictions
+        self.get_df().to_csv(fname)
+
+
 
 #%%
-def native_to_tal_fsl(path_to_img, force_new_transform=False,dof=6,output_folder = '/home/gustav/Desktop/data_processed/mta_data/native',guid='',remove_tmp_files=True):
+def native_to_tal_fsl(path_to_img, force_new_transform=False,dof=6,output_folder = '',guid='',remove_tmp_files=True):
     '''
     path_to_img - input image in native space
     force_new_transform - if True, the native image will be transformed regardless of if 
@@ -47,7 +69,6 @@ def native_to_tal_fsl(path_to_img, force_new_transform=False,dof=6,output_folder
         if '.mgz' in path_to_img:
             print('No support for .mgz format. Convert to .nii or .nii.gz')
             return
-        #transform_directory = os.path.join(path_to_img,'transforms')
         
         native_img = os.path.basename(path_to_img)
         if not guid: # if no output guid soecified
@@ -113,7 +134,7 @@ def native_to_tal_fsl(path_to_img, force_new_transform=False,dof=6,output_folder
             fsl_1.inputs.out_matrix_file = xfm_path
             fsl_1.run()
             
-            # read .mat file to assess if AC-PC alignment failed completely by looking at the diagonal elements (should be close to 1's)
+            # read .mat file for a quick-and-dirty assessment of whether AC-PC alignment failed completely by looking at the diagonal elements (should be close to 1's)
             f = open(xfm_path, 'r')
             l = [[num for num in line.split('  ')] for line in f ]
             matrix_1 = np.zeros((4,4))
